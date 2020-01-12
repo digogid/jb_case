@@ -1,12 +1,13 @@
-import { Application } from "express";
 declare class App {
-    app: Application;
-    port: number;
+    private app;
+    private port;
     constructor(appInit: {
         port: number;
         controllers: any;
+        middlewares: any;
     });
-    private routes;
+    private registerMiddlewares;
+    private registerRoutes;
     listen(): void;
 }
 export default App;

@@ -1,4 +1,17 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,67 +49,56 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = require("express");
+var repositoryBase_1 = require("./repositoryBase");
 var Usuario_1 = require("../domain/Usuario");
-var usuarioRepository_1 = require("../mysql/usuarioRepository");
-var UsuarioController = /** @class */ (function () {
-    function UsuarioController() {
-        var _this = this;
-        this.router = express_1.Router();
-        this.list = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-            var list, error_1;
-            var _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.repository.list((_a = req.params) === null || _a === void 0 ? void 0 : _a.id)];
-                    case 1:
-                        list = _b.sent();
-                        if (list)
-                            res.send(list);
-                        else
-                            res.send(204);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_1 = _b.sent();
-                        console.error("Usuario.get", error_1);
-                        res.status(400).send(error_1.message);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        }); };
-        this.save = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-            var body, novoUsuario, error_2;
+var UsuarioRepository = /** @class */ (function (_super) {
+    __extends(UsuarioRepository, _super);
+    function UsuarioRepository() {
+        var _this = _super.call(this) || this;
+        _this.list = function (id) { return __awaiter(_this, void 0, void 0, function () {
+            var sqlQuery, params, usuariosSql, usuarios;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        body = req.body;
-                        novoUsuario = new Usuario_1.default(body.name, body.email);
-                        return [4 /*yield*/, this.repository.save(novoUsuario)];
+                    case 0: return [4 /*yield*/, this.connect()];
                     case 1:
                         _a.sent();
-                        res.status(201).send(novoUsuario.id);
-                        return [3 /*break*/, 3];
+                        sqlQuery = 'SELECT * FROM usuario where 1 = 1';
+                        params = [];
+                        if (id) {
+                            params.push(id);
+                            sqlQuery += " AND id = ?";
+                        }
+                        return [4 /*yield*/, this.connection.execute(sqlQuery, params)];
                     case 2:
-                        error_2 = _a.sent();
-                        console.error('Usuario.post', error_2);
-                        res.status(400).send(error_2.message);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        usuariosSql = (_a.sent())[0];
+                        this.connection.end();
+                        usuarios = [];
+                        usuariosSql.forEach(function (u) {
+                            usuarios.push(new Usuario_1.default(u.name, u.email, u.id));
+                        });
+                        return [2 /*return*/, usuarios];
                 }
             });
         }); };
-        this.initRoutes();
-        this.repository = new usuarioRepository_1.default();
+        _this.save = function (usuario) { return __awaiter(_this, void 0, void 0, function () {
+            var sqlStatement, insertResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.connect()];
+                    case 1:
+                        _a.sent();
+                        sqlStatement = 'INSERT INTO Usuario (id, name, email) VALUES (?,?,?)';
+                        return [4 /*yield*/, this.connection.execute(sqlStatement, [usuario.id, usuario.name, usuario.email])];
+                    case 2:
+                        insertResult = _a.sent();
+                        console.log(insertResult);
+                        return [2 /*return*/, usuario];
+                }
+            });
+        }); };
+        return _this;
     }
-    UsuarioController.prototype.initRoutes = function () {
-        this.router.get("/usuarios/:id?", this.list);
-        this.router.post("/usuarios", this.save);
-    };
-    return UsuarioController;
-}());
-exports.default = new UsuarioController();
-//# sourceMappingURL=UsuarioController.js.map
+    return UsuarioRepository;
+}(repositoryBase_1.default));
+exports.default = UsuarioRepository;
+//# sourceMappingURL=usuarioRepository.js.map

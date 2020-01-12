@@ -8,8 +8,8 @@ class Produto {
   inStock: number;
   category: number;
 
-  constructor(name: string, bar_code: string, productPicture: string, inStock: number, category: number) {
-    this.id = uuid();
+  constructor(name: string, bar_code: string, productPicture: string, inStock: number, category: number, id? : string) {
+    this.id = id ?? uuid();
     this.name = name;
     this.bar_code = bar_code;
     this.productPicture = productPicture;

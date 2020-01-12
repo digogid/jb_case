@@ -19,25 +19,31 @@ class UsuarioController implements IController {
 
   private list = async (req: Request, res: Response) => {
     try {
-      const lista = await this.repository.listar(req.params?.id);
-      if (lista)
-        res.send(lista);
+      const list = await this.repository.list(req.params?.id);
+      if (list)
+        res.send(list);
       else
         res.send(204);
     } catch (error) {
-      console.log(error);
+      console.error(`Usuario.get`, error);
       res.status(400).send(error.message);
     }
   };
 
-  private save = (req: Request, res: Response) => {
+  private save = async (req: Request, res: Response) => {
     try {
       const { body } = req;
-      const novoUsuario = new Usuario(body.name, body.email);      
+      const novoUsuario = new Usuario(body.name, body.email);
+      await this.repository.save(novoUsuario);
       res.status(201).send(novoUsuario.id);
     } catch (error) {
       console.error('Usuario.post', error);
-      res.status(400).send(error.message);
+      if (error.code === 'ER_DUP_ENTRY') {
+        res.status(400).send('E-mail já cadastrado');
+      }
+      else {
+        res.status(500).send(error.message);
+      }
     }
   }
 }

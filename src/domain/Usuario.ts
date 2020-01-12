@@ -5,8 +5,8 @@ class Usuario {
   name: string;
   email: string;
 
-  constructor(name: string, email: string) {
-    this.id = uuid();
+  constructor(name: string, email: string, id?: string) {
+    this.id = id ?? uuid();
     this.name = name;
     this.email = email;
   }

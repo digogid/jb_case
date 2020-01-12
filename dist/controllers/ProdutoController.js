@@ -8,7 +8,7 @@ var ProdutoController = /** @class */ (function () {
         this.initRoutes();
     }
     ProdutoController.prototype.initRoutes = function () {
-        this.router.get("/produtos", this.list);
+        this.router.get("/produtos/:id?", this.list);
         this.router.post("/produtos", this.save);
     };
     ProdutoController.prototype.list = function (req, res) {
@@ -30,16 +30,16 @@ var ProdutoController = /** @class */ (function () {
             var id_1 = parseInt(req.params.id);
             res.status(200).send(users.filter(function (x) { return x.id === id_1; }));
         }
-        res.status(200).send(users);
+        else {
+            res.status(200).send(users);
+        }
     };
     ;
     ProdutoController.prototype.save = function (req, res) {
         try {
             var body = req.body;
-            console.log('req.body', req.body);
             var novoProduto = new Produto_1.default(body.name, body.bar_code, body.productPicture, body.inStock, body.category);
-            console.log(novoProduto);
-            res.status(201).send();
+            res.status(201).send(novoProduto.id);
         }
         catch (error) {
             console.error('Produto.post', error);

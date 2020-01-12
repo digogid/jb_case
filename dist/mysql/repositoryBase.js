@@ -36,67 +36,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = require("express");
-var Usuario_1 = require("../domain/Usuario");
-var usuarioRepository_1 = require("../mysql/usuarioRepository");
-var UsuarioController = /** @class */ (function () {
-    function UsuarioController() {
+var mysql = require('mysql2/promise');
+var RepositoryBase = /** @class */ (function () {
+    function RepositoryBase() {
         var _this = this;
-        this.router = express_1.Router();
-        this.list = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-            var list, error_1;
+        this.connect = function () { return __awaiter(_this, void 0, void 0, function () {
             var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.repository.list((_a = req.params) === null || _a === void 0 ? void 0 : _a.id)];
+                        _a = this;
+                        return [4 /*yield*/, mysql.createConnection({
+                                host: process.env.DB_HOST,
+                                user: process.env.DB_USER,
+                                password: process.env.DB_PWD,
+                                database: process.env.DB_NAME
+                            })];
                     case 1:
-                        list = _b.sent();
-                        if (list)
-                            res.send(list);
-                        else
-                            res.send(204);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_1 = _b.sent();
-                        console.error("Usuario.get", error_1);
-                        res.status(400).send(error_1.message);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        _a.connection = _b.sent();
+                        return [2 /*return*/];
                 }
             });
         }); };
-        this.save = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-            var body, novoUsuario, error_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        body = req.body;
-                        novoUsuario = new Usuario_1.default(body.name, body.email);
-                        return [4 /*yield*/, this.repository.save(novoUsuario)];
-                    case 1:
-                        _a.sent();
-                        res.status(201).send(novoUsuario.id);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_2 = _a.sent();
-                        console.error('Usuario.post', error_2);
-                        res.status(400).send(error_2.message);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
-                }
-            });
-        }); };
-        this.initRoutes();
-        this.repository = new usuarioRepository_1.default();
     }
-    UsuarioController.prototype.initRoutes = function () {
-        this.router.get("/usuarios/:id?", this.list);
-        this.router.post("/usuarios", this.save);
-    };
-    return UsuarioController;
+    return RepositoryBase;
 }());
-exports.default = new UsuarioController();
-//# sourceMappingURL=UsuarioController.js.map
+exports.default = RepositoryBase;
+//# sourceMappingURL=repositoryBase.js.map

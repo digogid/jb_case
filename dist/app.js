@@ -5,9 +5,16 @@ var App = /** @class */ (function () {
     function App(appInit) {
         this.app = express();
         this.port = appInit.port;
-        this.routes(appInit.controllers);
+        this.registerMiddlewares(appInit.middlewares);
+        this.registerRoutes(appInit.controllers);
     }
-    App.prototype.routes = function (controllers) {
+    App.prototype.registerMiddlewares = function (middleWares) {
+        var _this = this;
+        middleWares.forEach(function (middleWare) {
+            _this.app.use(middleWare);
+        });
+    };
+    App.prototype.registerRoutes = function (controllers) {
         var _this = this;
         controllers.forEach(function (controller) {
             _this.app.use("/", controller.router);
